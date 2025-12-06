@@ -1,7 +1,7 @@
 /*
 * Copyright (c) 2020-2025 Charmbracelet, Inc
 * Under MIT LICENSE
-* See third_party_licenses/github.com/charmbracelet/bubbles/LICENSE for the full license text
+* See third_party_licenses/github.com/charmbracelet/bubbletea/LICENSE for the full license text
 * The following code is based on the list-default and list-sample examples from bubbletea and modified by OKABE Gota.
  */
 
@@ -123,8 +123,10 @@ func (m templateModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.quitting = true
 			return m, tea.Quit
 		case tea.KeyEnter:
-			m.choice = m.list.SelectedItem().FilterValue()
-			return m, tea.Quit
+			if len(m.list.VisibleItems()) > 0 {
+				m.choice = m.list.SelectedItem().FilterValue()
+				return m, tea.Quit
+			}
 		}
 	}
 

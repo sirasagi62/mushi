@@ -2,6 +2,8 @@
 
 `mushi` is a command-line tool for generating `.gitignore` files from templates, inspired by the [github/gitignore](https://github.com/github/gitignore) repository. It provides both interactive and non-interactive modes to quickly create comprehensive ignore files for your projects.
 
+![](./assets/mushi.tape.gif)
+
 ## Features
 
 - **Template-based generation**: Use templates from the official github/gitignore repository
