@@ -4,21 +4,14 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
-	"github.com/charmbracelet/bubbles/list"
-	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )
-
-type item string
-
-func (i item) FilterValue() string { return "" }
 
 var createCmd = &cobra.Command{
 	Use:   "create [template]",
 	Short: "Generate .gitignore from a template",
-	Args:  cobra.MinimumNArgs(1),
+	Args:  cobra.ArbitraryArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		// キャッシュディレクトリのパスを解決
 		cacheDir, err := getCacheDir()
@@ -142,83 +135,6 @@ func init() {
 	createCmd.Flags().BoolVarP(&interactive, "interactive", "i", false, "Interactively select a template")
 	createCmd.Flags().BoolVarP(&force, "force", "f", false, "Force overwrite existing .gitignore file")
 	RootCmd.AddCommand(createCmd)
-}
-
-// テンプレート選択用のインタラクティブUI
-type templateModel struct {
-	list     list.Model
-	choice   string
-	quitting bool
-}
-
-func (m templateModel) Init() tea.Cmd {
-	return nil
-}
-
-func (m templateModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		if msg.Type == tea.KeyCtrlC || msg.Type == tea.KeyEsc {
-			m.quitting = true
-			return m, tea.Quit
-		} else if msg.Type == tea.KeyEnter {
-			m.choice = m.list.SelectedItem().FilterValue()
-			return m, tea.Quit
-		}
-	}
-
-	var cmd tea.Cmd
-	m.list, cmd = m.list.Update(msg)
-	return m, cmd
-}
-
-func (m templateModel) View() string {
-	if m.quitting {
-		return ""
-	}
-	return "\n" + m.list.View()
-}
-
-// runInteractiveSelector runs the interactive template selector
-func runInteractiveSelector(cacheDir string) (string, error) {
-	// キャッシュディレクトリ内のすべての .gitignore ファイルを取得
-	files, err := os.ReadDir(cacheDir)
-	if err != nil {
-		return "", err
-	}
-
-	// テンプレート名のリストを作成
-	items := []list.Item{}
-	for _, file := range files {
-		if !file.IsDir() && strings.HasSuffix(file.Name(), ".gitignore") {
-			// .gitignore を除去してテンプレート名を取得
-			templateName := strings.TrimSuffix(file.Name(), ".gitignore")
-			items = append(items, item(templateName))
-		}
-	}
-
-	// リストを作成
-	l := list.New(items, list.NewDefaultDelegate(), 0, 0)
-	l.Title = "Select a gitignore template"
-	l.SetFilteringEnabled(true)
-
-	// モデルを作成
-	m := templateModel{list: l}
-
-	// プログラムを実行
-	p := tea.NewProgram(m, tea.WithAltScreen())
-
-	// 結果を取得
-	result, err := p.Run()
-	if err != nil {
-		return "", err
-	}
-
-	if m, ok := result.(templateModel); ok {
-		return m.choice, nil
-	}
-
-	return "", nil
 }
 
 // getCacheDir returns the path to the cache directory

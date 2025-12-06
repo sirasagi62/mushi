@@ -81,3 +81,4 @@ The `common.ignore` file contains default ignore patterns that are prepended to 
 
 The program itself, written in Golang, is distributed under the MIT License. See the [LICENSE](LICENSE) file for details.
 However, `cmd/default.txt` and the default `~/.config/mushi/common.gitignore` generated from it are distributed under CC0.
+See [./third_party_licenses](/third_party_licenses) for licenses of dependent third-party libraries.
