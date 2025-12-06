@@ -1,7 +1,6 @@
-# 📝 Operating System generated files
-
+# Operating System generated files
 ## macOS
-# macOS file and folder metadata
+### macOS file and folder metadata
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -21,19 +20,19 @@ Temporary Items
 .apdisk
 
 ## Windows
-# Thumbnail cache files
+### Thumbnail cache files
 Thumbs.db
 ehthumbs.db
 ehthumbs_vista.db
 
-# System files
+### System files
 Desktop.ini
 $RECYCLE.BIN/
 pagefile.sys
 hiberfil.sys
 swapfile.sys
 
-# Temporary and backup files
+### Temporary and backup files
 ~$*
 *~
 *.tmp
@@ -42,50 +41,50 @@ swapfile.sys
 *.orig
 *.log
 
-# Windows shortcuts
+### Windows shortcuts
 *.lnk
 
-# Security identifier for downloaded files
+### Security identifier for downloaded files
 :*Zone.Identifier
 
 ## Linux
-# Image cache files
+### Image cache files
 .xvpics
 
-## 💻 Editors and IDEs
-# IntelliJ/Android Studio
+## Editors and IDEs
+### IntelliJ/Android Studio
 .idea/
-# Vim swap/backup files
+
+### Vim swap/backup files
 *.swp
 *.swo
 *~
 
-## 🏗️ Build Output and Dependencies
-# Compiled output directories
+## Build Output and Dependencies
+### Compiled output directories
 bin/
 obj/
 dist/
 
-## 🖥️ Virtual Machines
-# Virtual disk images
+## Virtual Machines
+### Virtual disk images
 *.vmdk
 *.vdi
 *.vhd
 *.vhdx
 
-## 🔑 Confidential Information
-# Envs
+## Confidential Information
+### Envs
 .env
 .env.production
 .env.prod
 .env.keys
 
-# SSH
+### SSH
 *.ssh
 *.ssh-key
 id_rsa
 
-## Original: https://github.com/github/gitignore/blob/main/community/OpenSSL.gitignore
 # OpenSSL-related files best not committed
 
 ## Certificate Authority
@@ -153,4 +152,5 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+mushi
 .aider*

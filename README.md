@@ -6,7 +6,7 @@
 
 - **Template-based generation**: Use templates from the official github/gitignore repository
 - **Interactive mode**: Fuzzy-search and select templates with a TUI interface
-- **Customizable common ignores**: Define your own default ignore patterns
+- **Customizable common.gitignores**: Define your own default ignore patterns
 - **Local caching**: Templates are cached locally for fast access
 - **Force overwrite**: Option to overwrite existing `.gitignore` files
 
@@ -63,17 +63,17 @@ mushi cache clean
 `mushi` uses the following directories and files:
 
 - **Configuration**: `~/.config/mushi/`
-- **Common ignore file**: `~/.config/mushi/common.ignore` (automatically created with default patterns)
+- **Common ignore file**: `~/.config/mushi/common.gitignore` (automatically created with default patterns)
 - **Cache directory**: `~/.cache/mushi/github-gitignore/` (local clone of github/gitignore)
 
-The `common.ignore` file contains default ignore patterns that are prepended to every generated `.gitignore` file. You can edit this file to customize your default ignores.
+The `common.gitignore` file contains default ignore patterns that are prepended to every generated `.gitignore` file. You can edit this file to customize your default ignores.
 
 ## How It Works
 
 1. On first run, `mushi` clones the [github/gitignore](https://github.com/github/gitignore) repository to your local cache
 2. When you create a `.gitignore`, it:
    - Updates the local cache (unless disabled)
-   - Reads your custom `common.ignore` file
+   - Reads your custom `common.gitignore` file
    - Combines it with the selected template
    - Writes the result to `./.gitignore`
 

@@ -65,13 +65,13 @@ var createCmd = &cobra.Command{
 		}
 
 		// 共通無視ファイルのパスを取得
-		commonIgnorePath := filepath.Join(configDir, "common.ignore")
+		commonIgnorePath := filepath.Join(configDir, "common.gitignore")
 
 		// 共通無視ファイルが存在しない場合は、デフォルトの無視ルールで作成
 		if _, err := os.Stat(commonIgnorePath); os.IsNotExist(err) {
-			fmt.Printf("Creating common ignore file: %s\n", commonIgnorePath)
+			fmt.Printf("Creating common.gitignore file: %s\n", commonIgnorePath)
 			if err := createDefaultIgnore(commonIgnorePath); err != nil {
-				fmt.Fprintf(os.Stderr, "Error creating common ignore file: %v\n", err)
+				fmt.Fprintf(os.Stderr, "Error creating common.gitignore file: %v\n", err)
 				os.Exit(1)
 			}
 		}
@@ -90,7 +90,7 @@ var createCmd = &cobra.Command{
 		// 共通無視ファイルの内容を読み込む
 		commonContent, err := os.ReadFile(commonIgnorePath)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error reading common ignore file: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Error reading common.gitignore file: %v\n", err)
 			os.Exit(1)
 		}
 

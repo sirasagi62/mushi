@@ -69,18 +69,18 @@ func initConfig() {
 	}
 
 	// 共通無視ファイルのパスを設定
-	CommonIgnorePath = filepath.Join(ConfigDir, "common.ignore")
+	CommonIgnorePath = filepath.Join(ConfigDir, "common.gitignore")
 
 	// 共通無視ファイルが存在しない場合はデフォルトの無視ルールで作成
 	if _, err := os.Stat(CommonIgnorePath); os.IsNotExist(err) {
 		if err := createDefaultIgnore(CommonIgnorePath); err != nil {
-			fmt.Fprintf(os.Stderr, "Error creating common ignore file %s: %v\n", CommonIgnorePath, err)
+			fmt.Fprintf(os.Stderr, "Error creating common.gitignore file %s: %v\n", CommonIgnorePath, err)
 			os.Exit(1)
 		}
 	}
 }
 
-// createDefaultIgnore creates a common.ignore file with default ignore rules
+// createDefaultIgnore creates a common.gitignore file with default ignore rules
 func createDefaultIgnore(path string) error {
 	// ディレクトリを作成
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
