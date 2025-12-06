@@ -1,0 +1,156 @@
+# 📝 Operating System generated files
+
+## macOS
+# macOS file and folder metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+.Icon?
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+## Windows
+# Thumbnail cache files
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+
+# System files
+Desktop.ini
+$RECYCLE.BIN/
+pagefile.sys
+hiberfil.sys
+swapfile.sys
+
+# Temporary and backup files
+~$*
+*~
+*.tmp
+*.bak
+*.old
+*.orig
+*.log
+
+# Windows shortcuts
+*.lnk
+
+# Security identifier for downloaded files
+:*Zone.Identifier
+
+## Linux
+# Image cache files
+.xvpics
+
+## 💻 Editors and IDEs
+# IntelliJ/Android Studio
+.idea/
+# Vim swap/backup files
+*.swp
+*.swo
+*~
+
+## 🏗️ Build Output and Dependencies
+# Compiled output directories
+bin/
+obj/
+dist/
+
+## 🖥️ Virtual Machines
+# Virtual disk images
+*.vmdk
+*.vdi
+*.vhd
+*.vhdx
+
+## 🔑 Confidential Information
+# Envs
+.env
+.env.production
+.env.prod
+.env.keys
+
+# SSH
+*.ssh
+*.ssh-key
+id_rsa
+
+## Original: https://github.com/github/gitignore/blob/main/community/OpenSSL.gitignore
+# OpenSSL-related files best not committed
+
+## Certificate Authority
+*.ca
+
+## Certificate
+*.crt
+
+## Certificate Sign Request
+*.csr
+
+## Certificate
+*.der
+
+## Key database file
+*.kdb
+
+## OSCP request data
+*.org
+
+## PKCS #12
+*.p12
+
+## PEM-encoded certificate data
+*.pem
+
+## Random number seed
+*.rnd
+
+## SSLeay data
+*.ssleay
+
+## S/MIME message
+*.smime
+
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Code coverage profiles and other test artifacts
+*.out
+coverage.*
+*.coverprofile
+profile.cov
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
+go.work.sum
+
+# env file
+.env
+
+# Editor/IDE
+# .idea/
+# .vscode/
+.aider*
