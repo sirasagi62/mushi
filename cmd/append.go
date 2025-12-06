@@ -8,11 +8,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var createCmd = &cobra.Command{
-	Use:   "create [template]",
-	Short: "Generate .gitignore from a template",
+var appendCmd = &cobra.Command{
+	Use:   "append [template]",
+	Short: "Append template to existing .gitignore",
 	Args:  cobra.ArbitraryArgs,
 	Run: func(cmd *cobra.Command, args []string) {
+		// 既存の .gitignore が存在するか確認
+		if _, err := os.Stat(".gitignore"); os.IsNotExist(err) {
+			fmt.Fprintf(os.Stderr, "Error: .gitignore does not exist in current directory\n")
+			os.Exit(1)
+		}
+
 		// キャッシュディレクトリのパスを解決
 		cacheDir, err := getCacheDir()
 		if err != nil {
@@ -76,18 +82,6 @@ var createCmd = &cobra.Command{
 			}
 		}
 
-		// 共通無視ファイルのパスを取得
-		commonIgnorePath := filepath.Join(configDir, "common.gitignore")
-
-		// 共通無視ファイルが存在しない場合は、デフォルトの無視ルールで作成
-		if _, err := os.Stat(commonIgnorePath); os.IsNotExist(err) {
-			fmt.Printf("Creating common.gitignore file: %s\n", commonIgnorePath)
-			if err := createDefaultIgnore(commonIgnorePath); err != nil {
-				fmt.Fprintf(os.Stderr, "Error creating common.gitignore file: %v\n", err)
-				os.Exit(1)
-			}
-		}
-
 		// テンプレートファイルのパスを構築
 		templateFile := template + ".gitignore"
 		templatePath := filepath.Join(cacheDir, templateFile)
@@ -99,52 +93,53 @@ var createCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		// 共通無視ファイルの内容を読み込む
-		commonContent, err := os.ReadFile(commonIgnorePath)
+		// 既存の .gitignore を読み込む
+		existingContent, err := os.ReadFile(".gitignore")
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error reading common.gitignore file: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Error reading existing .gitignore: %v\n", err)
 			os.Exit(1)
 		}
 
-		// 両方の内容を結合
+		// common.gitignore を連結するかどうか
 		var finalContent []byte
-		if len(commonContent) > 0 {
-			finalContent = append(finalContent, commonContent...)
-			finalContent = append(finalContent, '\n')
-		}
-		finalContent = append(finalContent, templateContent...)
+		if !noCommon {
+			// 共通無視ファイルのパスを取得
+			commonIgnorePath := filepath.Join(configDir, "common.gitignore")
 
-		// 出力ファイルのパスを設定
-		outputPath := ".gitignore"
-
-		// 既に .gitignore が存在するか確認
-		if _, err := os.Stat(outputPath); err == nil {
-			if !force {
-				fmt.Fprintf(os.Stderr, "Error: %s already exists. Use -f or --force to overwrite.\n", outputPath)
+			// 共通無視ファイルの内容を読み込む
+			commonContent, err := os.ReadFile(commonIgnorePath)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error reading common.gitignore file: %v\n", err)
 				os.Exit(1)
 			}
-			fmt.Printf("Overwriting existing %s\n", outputPath)
-		} else {
-			fmt.Printf("Generating %s\n", outputPath)
+
+			if len(commonContent) > 0 {
+				finalContent = append(finalContent, commonContent...)
+				finalContent = append(finalContent, '\n')
+			}
 		}
 
+		// 既存の内容に追記
+		finalContent = append(existingContent, '\n')
+		finalContent = append(finalContent, templateContent...)
+
 		// 結果を .gitignore に出力
-		if err := os.WriteFile(outputPath, finalContent, 0644); err != nil {
-			fmt.Fprintf(os.Stderr, "Error writing to %s: %v\n", outputPath, err)
+		if err := os.WriteFile(".gitignore", finalContent, 0644); err != nil {
+			fmt.Fprintf(os.Stderr, "Error writing to .gitignore: %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("Successfully generated %s\n", outputPath)
+		fmt.Printf("Successfully appended %s to .gitignore\n", template)
 	},
 }
 
 var (
-	force bool
+	noCommon bool
 )
 
 func init() {
-	createCmd.Flags().BoolVarP(&interactive, "interactive", "i", false, "Interactively select a template")
-	createCmd.Flags().BoolVarP(&force, "force", "f", false, "Force overwrite existing .gitignore file")
-	createCmd.Flags().BoolVar(&noUpdate, "no-update", false, "Skip updating the local cache")
-	RootCmd.AddCommand(createCmd)
+	appendCmd.Flags().BoolVarP(&interactive, "interactive", "i", false, "Interactively select a template")
+	appendCmd.Flags().BoolVar(&noUpdate, "no-update", false, "Skip updating the local cache")
+	appendCmd.Flags().BoolVar(&noCommon, "no-common", false, "Do not include common.gitignore patterns")
+	RootCmd.AddCommand(appendCmd)
 }

@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -17,11 +18,21 @@ var (
 	CacheDir string
 	// CommonIgnorePath は共通無視ファイルのパスです
 	CommonIgnorePath string
+	// Version は mushi のバージョンです
+	Version string = "v0.2.0"
 )
 
+// Config は mushi の設定を保持する構造体です
+type Config struct {
+	NoUpdate bool `mapstructure:"no_update"`
+}
+
+var config Config
+
 var RootCmd = &cobra.Command{
-	Use:   "mushi",
-	Short: "mushi is a gitignore template generator",
+	Use:     "mushi",
+	Short:   "mushi is a gitignore template generator",
+	Version: Version,
 }
 
 // デフォルトの無視ルール
@@ -31,7 +42,46 @@ var defaultContent []byte
 
 func init() {
 	// 共通フラグやサブコマンドの初期化
-	cobra.OnInitialize(initConfig)
+	cobra.OnInitialize(initConfig, initViper)
+}
+
+func initViper() {
+	// Viperの設定
+	viper.SetConfigName("config")
+	viper.SetConfigType("toml")
+	viper.AddConfigPath(ConfigDir)
+
+	// デフォルト値の設定
+	viper.SetDefault("no_update", false)
+
+	// 設定ファイルの読み込み
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			// 設定ファイルが見つからない以外のエラーは警告
+			fmt.Fprintf(os.Stderr, "Warning: Error reading config file: %v\n", err)
+		}
+		// 設定ファイルが見つからない場合は新規作成
+		if err := createConfigFile(); err != nil {
+			fmt.Fprintf(os.Stderr, "Warning: Error creating config file: %v\n", err)
+		}
+	}
+
+	// 設定を構造体にバインド
+	if err := viper.Unmarshal(&config); err != nil {
+		fmt.Fprintf(os.Stderr, "Error parsing config: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+// createConfigFile creates a default config file
+func createConfigFile() error {
+	configContent := `# mushi configuration file
+
+# Whether to skip updating the local cache
+# no_update = false
+`
+
+	return os.WriteFile(filepath.Join(ConfigDir, "config.toml"), []byte(configContent), 0644)
 }
 
 func initConfig() {

@@ -46,6 +46,32 @@ mushi create Go -f
 mushi create Go --force
 ```
 
+### Append to Existing .gitignore
+
+Append a template to an existing `.gitignore` file:
+
+```bash
+mushi append Go
+```
+
+With interactive selection:
+
+```bash
+mushi append -i
+```
+
+By default, `append` does not include patterns from `common.gitignore`. To include them:
+
+```bash
+mushi append Go --no-common=false
+```
+
+Or disable common patterns explicitly:
+
+```bash
+mushi append Go --no-common
+```
+
 ### Cache Management
 
 Update the local template cache:
@@ -60,21 +86,47 @@ Clean the local cache:
 mushi cache clean
 ```
 
+### Cache Update Control
+
+You can control whether the local cache is automatically updated when creating a `.gitignore` file:
+
+- **Command-line flag**: Use `--no-update` to skip cache updates for a single command
+  ```bash
+  mushi create Go --no-update
+  ```
+
+- **Configuration file**: Set `no_update = true` in `~/.config/mushi/config.toml` to disable automatic updates globally
+
+The command-line flag takes precedence over the configuration file setting.
+
 ## Configuration
 
 `mushi` uses the following directories and files:
 
-- **Configuration**: `~/.config/mushi/`
+- **Configuration directory**: `~/.config/mushi/`
 - **Common ignore file**: `~/.config/mushi/common.gitignore` (automatically created with default patterns)
+- **Configuration file**: `~/.config/mushi/config.toml` (automatically created with default settings)
 - **Cache directory**: `~/.cache/mushi/github-gitignore/` (local clone of github/gitignore)
 
 The `common.gitignore` file contains default ignore patterns that are prepended to every generated `.gitignore` file. You can edit this file to customize your default ignores.
 
+The `config.toml` file allows you to customize mushi's behavior. On first run, it will be created with the following default content:
+
+```toml
+# mushi configuration file
+
+# Whether to skip updating the local cache
+# no_update = false
+```
+
+Uncomment and modify the `no_update` line to change the default behavior.
+
 ## How It Works
 
-1. On first run, `mushi` clones the [github/gitignore](https://github.com/github/gitignore) repository to your local cache
+1. On first run, `mushi` clones the [github/gitignore](https://github.com/github/gitignore) repository to your local cache and creates default configuration files
 2. When you create a `.gitignore`, it:
-   - Updates the local cache (unless disabled)
+   - Checks if the cache should be updated (based on command-line flag and config file)
+   - Updates the local cache if needed
    - Reads your custom `common.gitignore` file
    - Combines it with the selected template
    - Writes the result to `./.gitignore`
