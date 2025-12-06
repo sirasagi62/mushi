@@ -76,8 +76,7 @@ var appendCmd = &cobra.Command{
 			} else {
 				fmt.Println("Updating cache...")
 				if err := updateCache(cacheDir); err != nil {
-					fmt.Fprintf(os.Stderr, "Error updating cache: %v\n", err)
-					os.Exit(1)
+					fmt.Fprintf(os.Stderr, "Failed to update cache: %v\nSkipping cache update.", err)
 				}
 			}
 		}
@@ -129,7 +128,7 @@ var appendCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fmt.Printf("Successfully appended %s to .gitignore\n", template)
+		fmt.Printf("✨️ Successfully appended %s to .gitignore\n", template)
 	},
 }
 
