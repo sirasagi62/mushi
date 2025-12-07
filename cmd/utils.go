@@ -10,6 +10,7 @@ import (
 var (
 	interactive bool
 	noUpdate    bool
+	print       bool
 )
 
 // getCacheDir returns the path to the cache directory
@@ -26,6 +27,7 @@ func getCacheDir() (string, error) {
 
 	return filepath.Join(home, ".cache", "mushi", "github-gitignore"), nil
 }
+
 // ResolveImports は、content 内の "#Import:template" 行を展開して、
 // 対応するテンプレートの内容に置き換えます。
 func ResolveImports(content []byte, cacheDir string) ([]byte, error) {

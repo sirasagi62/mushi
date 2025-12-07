@@ -97,6 +97,11 @@ var createCmd = &cobra.Command{
 		}
 		finalContent = append(finalContent, templateContent...)
 
+		// --print が指定されたら標準出力に表示
+		if print {
+			os.Stdout.Write(finalContent)
+			return
+		}
 		// 出力ファイルのパスを設定
 		outputPath := ".gitignore"
 
@@ -129,5 +134,6 @@ func init() {
 	createCmd.Flags().BoolVarP(&interactive, "interactive", "i", false, "Interactively select a template")
 	createCmd.Flags().BoolVarP(&force, "force", "f", false, "Force overwrite existing .gitignore file")
 	createCmd.Flags().BoolVar(&noUpdate, "no-update", false, "Skip updating the local cache")
+	createCmd.Flags().BoolVar(&print, "print", false, "Print the result to stdout instead of writing to .gitignore")
 	RootCmd.AddCommand(createCmd)
 }

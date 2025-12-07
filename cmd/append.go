@@ -133,7 +133,6 @@ var appendCmd = &cobra.Command{
 
 var (
 	noCommon bool
-	print    bool
 )
 
 func init() {

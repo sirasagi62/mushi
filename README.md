@@ -11,6 +11,8 @@
 - **Customizable common.gitignores**: Define your own default ignore patterns
 - **Local caching**: Templates are cached locally for fast access
 - **Force overwrite**: Option to overwrite existing `.gitignore` files
+- **Template listing**: List all available templates with `mushi list`
+- **Print to stdout**: Preview output without writing to file using `--print`
 
 ## Installation
 
@@ -72,6 +74,27 @@ Or disable common patterns explicitly:
 mushi append Go --no-common
 ```
 
+### List Available Templates
+
+List all available gitignore templates:
+
+```bash
+mushi list
+```
+
+This command shows all templates available in the local cache, including those in subdirectories.
+
+### Print to Standard Output
+
+Preview the generated content without writing to a file:
+
+```bash
+mushi create Go --print
+mushi append Python --print
+```
+
+This is useful for inspecting the output before writing it to a file.
+
 ### Cache Management
 
 Update the local template cache:
@@ -121,13 +144,26 @@ The `config.toml` file allows you to customize mushi's behavior. On first run, i
 
 Uncomment and modify the `no_update` line to change the default behavior.
 
+### Common.gitignore Imports
+
+The `common.gitignore` file supports importing other templates using the `#Import:` directive:
+
+```gitignore
+#Import:Global/macOS
+#Import:Global/Windows
+#Import:Global/Linux
+#Import:community/OpenSSL
+```
+
+This allows you to include patterns from the github/gitignore repository in your common ignore file. On first run, `common.gitignore` is created with these default imports.
+
 ## How It Works
 
 1. On first run, `mushi` clones the [github/gitignore](https://github.com/github/gitignore) repository to your local cache and creates default configuration files
 2. When you create a `.gitignore`, it:
    - Checks if the cache should be updated (based on command-line flag and config file)
    - Updates the local cache if needed
-   - Reads your custom `common.gitignore` file
+   - Reads your custom `common.gitignore` file (resolving any imports)
    - Combines it with the selected template
    - Writes the result to `./.gitignore`
 
