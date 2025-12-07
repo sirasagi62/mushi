@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
@@ -65,20 +66,26 @@ func runInteractiveSelector(cacheDir string) (string, error) {
 			os.Exit(1)
 		}
 	}
-	// キャッシュディレクトリ内のすべての .gitignore ファイルを取得
-	files, err := os.ReadDir(cacheDir)
-	if err != nil {
-		return "", err
-	}
-
-	// テンプレート名のリストを作成
+	// キャッシュディレクトリ内のすべての .gitignore ファイルを再帰的に取得
 	items := []list.Item{}
-	for _, file := range files {
-		if !file.IsDir() && strings.HasSuffix(file.Name(), ".gitignore") {
+	err := filepath.Walk(cacheDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() && strings.HasSuffix(info.Name(), ".gitignore") {
+			// キャッシュディレクトリからの相対パスを取得
+			relPath, err := filepath.Rel(cacheDir, path)
+			if err != nil {
+				return err
+			}
 			// .gitignore を除去してテンプレート名を取得
-			templateName := strings.TrimSuffix(file.Name(), ".gitignore")
+			templateName := strings.TrimSuffix(relPath, ".gitignore")
 			items = append(items, item(templateName))
 		}
+		return nil
+	})
+	if err != nil {
+		return "", err
 	}
 
 	// リストを作成

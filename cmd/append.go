@@ -82,13 +82,12 @@ var appendCmd = &cobra.Command{
 		}
 
 		// テンプレートファイルのパスを構築
-		templateFile := template + ".gitignore"
-		templatePath := filepath.Join(cacheDir, templateFile)
+		templatePath := filepath.Join(cacheDir, template+".gitignore")
 
 		// テンプレートファイルの内容を読み込む
 		templateContent, err := os.ReadFile(templatePath)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error reading template file %s: %v\n", templateFile, err)
+			fmt.Fprintf(os.Stderr, "Error reading template file %s: %v\n", templatePath, err)
 			os.Exit(1)
 		}
 
