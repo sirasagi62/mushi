@@ -7,10 +7,12 @@ import (
 	"strings"
 )
 
+// 複数のコマンドで共通するオプション
 var (
 	interactive bool
 	noUpdate    bool
 	print       bool
+	outputPath  string
 )
 
 // getCacheDir returns the path to the cache directory

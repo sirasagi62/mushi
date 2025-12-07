@@ -102,10 +102,7 @@ var createCmd = &cobra.Command{
 			os.Stdout.Write(finalContent)
 			return
 		}
-		// 出力ファイルのパスを設定
-		outputPath := ".gitignore"
-
-		// 既に .gitignore が存在するか確認
+		// 既に出力ファイルが存在するか確認
 		if _, err := os.Stat(outputPath); err == nil {
 			if !force {
 				fmt.Fprintf(os.Stderr, "Error: %s already exists. Use -f or --force to overwrite.\n", outputPath)
@@ -116,7 +113,7 @@ var createCmd = &cobra.Command{
 			fmt.Printf("Generating %s\n", outputPath)
 		}
 
-		// 結果を .gitignore に出力
+		// 結果を出力ファイルに書き込み
 		if err := os.WriteFile(outputPath, finalContent, 0644); err != nil {
 			fmt.Fprintf(os.Stderr, "Error writing to %s: %v\n", outputPath, err)
 			os.Exit(1)
@@ -126,6 +123,7 @@ var createCmd = &cobra.Command{
 	},
 }
 
+// createのみのオプションを記述
 var (
 	force bool
 )
@@ -135,5 +133,6 @@ func init() {
 	createCmd.Flags().BoolVarP(&force, "force", "f", false, "Force overwrite existing .gitignore file")
 	createCmd.Flags().BoolVar(&noUpdate, "no-update", false, "Skip updating the local cache")
 	createCmd.Flags().BoolVar(&print, "print", false, "Print the result to stdout instead of writing to .gitignore")
+	createCmd.Flags().StringVarP(&outputPath, "path", "p", ".gitignore", "Path to output file (default: .gitignore)")
 	RootCmd.AddCommand(createCmd)
 }

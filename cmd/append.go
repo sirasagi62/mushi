@@ -13,9 +13,9 @@ var appendCmd = &cobra.Command{
 	Short: "Append template to existing .gitignore",
 	Args:  cobra.ArbitraryArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		// 既存の .gitignore が存在するか確認
-		if _, err := os.Stat(".gitignore"); os.IsNotExist(err) {
-			fmt.Fprintf(os.Stderr, "Error: .gitignore does not exist in current directory\n")
+		// 既存の出力ファイルが存在するか確認
+		if _, err := os.Stat(outputPath); os.IsNotExist(err) {
+			fmt.Fprintf(os.Stderr, "Error: %s does not exist\n", outputPath)
 			os.Exit(1)
 		}
 
@@ -121,9 +121,9 @@ var appendCmd = &cobra.Command{
 			return
 		}
 
-		// 結果を .gitignore に出力
-		if err := os.WriteFile(".gitignore", finalContent, 0644); err != nil {
-			fmt.Fprintf(os.Stderr, "Error writing to .gitignore: %v\n", err)
+		// 結果を出力ファイルに書き込み
+		if err := os.WriteFile(outputPath, finalContent, 0644); err != nil {
+			fmt.Fprintf(os.Stderr, "Error writing to %s: %v\n", outputPath, err)
 			os.Exit(1)
 		}
 
@@ -131,6 +131,7 @@ var appendCmd = &cobra.Command{
 	},
 }
 
+// appendのみのオプションを記述
 var (
 	noCommon bool
 )
@@ -140,5 +141,6 @@ func init() {
 	appendCmd.Flags().BoolVar(&noUpdate, "no-update", false, "Skip updating the local cache")
 	appendCmd.Flags().BoolVar(&noCommon, "no-common", false, "Do not include common.gitignore patterns")
 	appendCmd.Flags().BoolVar(&print, "print", false, "Print the result to stdout instead of writing to .gitignore")
+	appendCmd.Flags().StringVarP(&outputPath, "path", "p", ".gitignore", "Path to output file (default: .gitignore)")
 	RootCmd.AddCommand(appendCmd)
 }

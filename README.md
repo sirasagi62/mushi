@@ -62,16 +62,16 @@ With interactive selection:
 mushi append -i
 ```
 
-By default, `append` does not include patterns from `common.gitignore`. To include them:
-
-```bash
-mushi append Go --no-common=false
-```
-
-Or disable common patterns explicitly:
+By default, `append` includes patterns from `common.gitignore`. To disable them:
 
 ```bash
 mushi append Go --no-common
+```
+
+Or explicitly enable common patterns:
+
+```bash
+mushi append Go --no-common=false
 ```
 
 ### List Available Templates
@@ -94,6 +94,17 @@ mushi append Python --print
 ```
 
 This is useful for inspecting the output before writing it to a file.
+
+### Custom output path
+
+Specify a custom output path for the generated `.gitignore` file using `--path` or `-p`:
+
+```bash
+mushi create Go --path .gitignore.custom
+mushi append Python -p .gitignore.custom
+```
+
+By default, both `create` and `append` commands write to `.gitignore` in the current directory.
 
 ### Cache Management
 
