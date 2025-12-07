@@ -56,18 +56,9 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 	fmt.Fprint(w, fn(str))
 }
 
-// runInteractiveSelector runs the interactive template selector
-func runInteractiveSelector(cacheDir string) (string, error) {
-	// キャッシュディレクトリが存在しない場合は、自動的に取得
-	if _, err := os.Stat(cacheDir); os.IsNotExist(err) {
-		fmt.Println("Cache not found. Cloning github/gitignore repository...")
-		if err := cloneCache(cacheDir); err != nil {
-			fmt.Fprintf(os.Stderr, "Error cloning cache: %v\n", err)
-			os.Exit(1)
-		}
-	}
-	// キャッシュディレクトリ内のすべての .gitignore ファイルを再帰的に取得
-	items := []list.Item{}
+// findTemplates returns a list of template names found in the cache directory
+func findTemplates(cacheDir string) ([]string, error) {
+	var templates []string
 	err := filepath.Walk(cacheDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -80,12 +71,31 @@ func runInteractiveSelector(cacheDir string) (string, error) {
 			}
 			// .gitignore を除去してテンプレート名を取得
 			templateName := strings.TrimSuffix(relPath, ".gitignore")
-			items = append(items, item(templateName))
+			templates = append(templates, templateName)
 		}
 		return nil
 	})
+	return templates, err
+}
+
+// runInteractiveSelector runs the interactive template selector
+func runInteractiveSelector(cacheDir string) (string, error) {
+	// キャッシュディレクトリが存在しない場合は、自動的に取得
+	if _, err := os.Stat(cacheDir); os.IsNotExist(err) {
+		fmt.Println("Cache not found. Cloning github/gitignore repository...")
+		if err := cloneCache(cacheDir); err != nil {
+			fmt.Fprintf(os.Stderr, "Error cloning cache: %v\n", err)
+			os.Exit(1)
+		}
+	}
+	// キャッシュディレクトリ内のすべての .gitignore ファイルを再帰的に取得
+	templateNames, err := findTemplates(cacheDir)
 	if err != nil {
 		return "", err
+	}
+	items := make([]list.Item, len(templateNames))
+	for i, name := range templateNames {
+		items[i] = item(name)
 	}
 
 	// リストを作成
