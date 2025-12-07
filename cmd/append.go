@@ -72,9 +72,9 @@ var appendCmd = &cobra.Command{
 		}
 
 		// 既存の .gitignore を読み込む
-		existingContent, err := os.ReadFile(".gitignore")
+		existingContent, err := os.ReadFile(outputPath)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error reading existing .gitignore: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Error reading existing %s: %v\n", outputPath, err)
 			os.Exit(1)
 		}
 
