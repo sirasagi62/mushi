@@ -3,7 +3,23 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"os/exec"
+	"path/filepath"
 )
+
+// cloneCache clones the github/gitignore repository to the cache directory
+func cloneCache(cacheDir string) error {
+	// 親ディレクトリを作成
+	if err := os.MkdirAll(filepath.Dir(cacheDir), 0755); err != nil {
+		return err
+	}
+
+	cmd := exec.Command("git", "clone", "--depth", "1", "https://github.com/github/gitignore", cacheDir)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd.Run()
+}
 
 // EnsureCache ensures the cache directory exists and updates it if needed
 // skipUpdateがtrueの場合は更新をスキップ

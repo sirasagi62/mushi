@@ -79,10 +79,20 @@ var createCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		// インポートを解決
+		var resolvedCommon []byte
+		if len(commonContent) > 0 {
+			resolvedCommon, err = ResolveImports(commonContent, cacheDir)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error resolving imports in common.gitignore: %v\n", err)
+				os.Exit(1)
+			}
+		}
+
 		// 両方の内容を結合
 		var finalContent []byte
-		if len(commonContent) > 0 {
-			finalContent = append(finalContent, commonContent...)
+		if len(resolvedCommon) > 0 {
+			finalContent = append(finalContent, resolvedCommon...)
 			finalContent = append(finalContent, '\n')
 		}
 		finalContent = append(finalContent, templateContent...)

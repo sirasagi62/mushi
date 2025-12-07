@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	_ "embed"
 	"fmt"
 	"os"
 	"os/exec"
@@ -34,11 +33,6 @@ var RootCmd = &cobra.Command{
 	Short:   "mushi is a gitignore template generator",
 	Version: Version,
 }
-
-// デフォルトの無視ルール
-//
-//go:embed default.txt
-var defaultContent []byte
 
 func init() {
 	// 共通フラグやサブコマンドの初期化
@@ -128,30 +122,6 @@ func initConfig() {
 			os.Exit(1)
 		}
 	}
-}
-
-// createDefaultIgnore creates a common.gitignore file with default ignore rules
-func createDefaultIgnore(path string) error {
-	// ディレクトリを作成
-	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
-		return err
-	}
-
-	return os.WriteFile(path, []byte(defaultContent), 0644)
-}
-
-// cloneCache clones the github/gitignore repository to the cache directory
-func cloneCache(cacheDir string) error {
-	// 親ディレクトリを作成
-	if err := os.MkdirAll(filepath.Dir(cacheDir), 0755); err != nil {
-		return err
-	}
-
-	cmd := exec.Command("git", "clone", "--depth", "1", "https://github.com/github/gitignore", cacheDir)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	return cmd.Run()
 }
 
 // updateCache updates the local cache with git pull

@@ -42,5 +42,16 @@ func TestEnsureCommonIgnore(t *testing.T) {
 		if path != path2 {
 			t.Errorf("Path should be consistent: %s vs %s", path, path2)
 		}
+
+		// 作成されたファイルの内容を検証
+		content, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatalf("failed to read created common.gitignore: %v", err)
+		}
+
+		expected := DefaultContent()
+		if string(content) != string(expected) {
+			t.Errorf("common.gitignore content mismatch:\nexpected:\n%s\n\ngot:\n%s", string(expected), string(content))
+		}
 	})
 }

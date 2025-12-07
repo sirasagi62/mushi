@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"io"
+	"os"
 	"path/filepath"
 	"testing"
 )
@@ -141,4 +143,91 @@ func TestGetConfigDir(t *testing.T) {
 			t.Error("getConfigDir() should return error when HOME is not set")
 		}
 	})
+}
+
+// TestResolveImports は ResolveImports 関数の動作をテストします
+// ResolveImportsはそれぞれのImportの末尾とファイル全体の末尾に改行を挿入する
+func TestResolveImports(t *testing.T) {
+	tmpDir := t.TempDir()
+	cacheDir := filepath.Join(tmpDir, "cache")
+	if err := os.MkdirAll(filepath.Join(cacheDir, "Global"), 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	// ダミーテンプレートを作成
+	write := func(path, content string) {
+		if err := os.WriteFile(filepath.Join(cacheDir, path), []byte(content), 0644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	write("Go.gitignore", "bin/\n*.exe\n")
+	write("Python.gitignore", "*.pyc\n__pycache__/\n")
+	write("Global/Windows.gitignore", "Thumbs.db\n")
+
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+		warning  bool
+	}{
+		{
+			name:     "simple import",
+			input:    "#Import:Go\n*.log",
+			expected: "bin/\n*.exe\n\n*.log\n",
+		},
+		{
+			name:     "subdirectory import",
+			input:    "#Import:Global/Windows\n",
+			expected: "Thumbs.db\n\n\n",
+		},
+		{
+			name:     "multiple imports",
+			input:    "#Import:Go\n#Import:Python\n",
+			expected: "bin/\n*.exe\n\n*.pyc\n__pycache__/\n\n\n",
+		},
+		{
+			name:     "nonexistent template",
+			input:    "#Import:Rust\n*.tmp\n",
+			expected: "*.tmp\n\n",
+			warning:  true,
+		},
+		{
+			name:     "empty import",
+			input:    "#Import:\n*.tmp\n",
+			expected: "*.tmp\n\n",
+		},
+		{
+			name:     "import in comment",
+			input:    "# #Import:Go\n*.tmp\n",
+			expected: "# #Import:Go\n*.tmp\n\n",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var stderrBuf []byte
+			// os.Stderr を一時的に差し替え
+			origStderr := os.Stderr
+			r, w, _ := os.Pipe()
+			os.Stderr = w
+
+			got, err := ResolveImports([]byte(tt.input), cacheDir)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			// 標準エラー出力をキャプチャ
+			w.Close()
+			stderrBuf, _ = io.ReadAll(r)
+			os.Stderr = origStderr
+
+			if string(got) != tt.expected {
+				t.Errorf("expected:\n%q\ngot:\n%q", tt.expected, got)
+			}
+
+			if tt.warning && len(stderrBuf) == 0 {
+				t.Error("expected warning message, but none was printed")
+			}
+		})
+	}
 }

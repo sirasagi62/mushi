@@ -95,8 +95,18 @@ var appendCmd = &cobra.Command{
 				os.Exit(1)
 			}
 
+			// インポートを解決
+			var resolvedCommon []byte
 			if len(commonContent) > 0 {
-				finalContent = append(finalContent, commonContent...)
+				resolvedCommon, err = ResolveImports(commonContent, cacheDir)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Error resolving imports in common.gitignore: %v\n", err)
+					os.Exit(1)
+				}
+			}
+
+			if len(resolvedCommon) > 0 {
+				finalContent = append(finalContent, resolvedCommon...)
 				finalContent = append(finalContent, '\n')
 			}
 		}
@@ -104,6 +114,12 @@ var appendCmd = &cobra.Command{
 		// 既存の内容に追記
 		finalContent = append(existingContent, '\n')
 		finalContent = append(finalContent, templateContent...)
+
+		// --print が指定されたら標準出力に表示
+		if print {
+			os.Stdout.Write(finalContent)
+			return
+		}
 
 		// 結果を .gitignore に出力
 		if err := os.WriteFile(".gitignore", finalContent, 0644); err != nil {
@@ -117,11 +133,13 @@ var appendCmd = &cobra.Command{
 
 var (
 	noCommon bool
+	print    bool
 )
 
 func init() {
 	appendCmd.Flags().BoolVarP(&interactive, "interactive", "i", false, "Interactively select a template")
 	appendCmd.Flags().BoolVar(&noUpdate, "no-update", false, "Skip updating the local cache")
 	appendCmd.Flags().BoolVar(&noCommon, "no-common", false, "Do not include common.gitignore patterns")
+	appendCmd.Flags().BoolVar(&print, "print", false, "Print the result to stdout instead of writing to .gitignore")
 	RootCmd.AddCommand(appendCmd)
 }
