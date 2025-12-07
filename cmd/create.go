@@ -48,43 +48,18 @@ var createCmd = &cobra.Command{
 			template = args[0]
 		}
 
-		// キャッシュディレクトリが存在しない場合は、自動的に取得
-		if _, err := os.Stat(cacheDir); os.IsNotExist(err) {
-			fmt.Println("Cache not found. Cloning github/gitignore repository...")
-			if err := cloneCache(cacheDir); err != nil {
-				fmt.Fprintf(os.Stderr, "Error cloning cache: %v\n", err)
-				os.Exit(1)
-			}
-		} else {
-			// キャッシュ更新の設定を決定
-			// コマンドラインフラグが設定されている場合は、それ優先
-			skipUpdate := noUpdate
-			if !noUpdate {
-				// コマンドラインフラグが未設定の場合は、設定ファイルの値を使用
-				skipUpdate = config.NoUpdate
-			}
-
-			// キャッシュディレクトリが存在する場合は、更新を確認
-			if skipUpdate {
-				fmt.Println("Skipping cache update...")
-			} else {
-				fmt.Println("Updating cache...")
-				if err := updateCache(cacheDir); err != nil {
-					fmt.Fprintf(os.Stderr, "Failed to update cache: %v\nSkipping cache update.\n", err)
-				}
-			}
+		// キャッシュの存在確認と更新
+		skipUpdate := noUpdate || config.NoUpdate
+		if err := EnsureCache(cacheDir, skipUpdate); err != nil {
+			fmt.Fprintf(os.Stderr, "Error managing cache: %v\n", err)
+			os.Exit(1)
 		}
 
-		// 共通無視ファイルのパスを取得
-		commonIgnorePath := filepath.Join(configDir, "common.gitignore")
-
-		// 共通無視ファイルが存在しない場合は、デフォルトの無視ルールで作成
-		if _, err := os.Stat(commonIgnorePath); os.IsNotExist(err) {
-			fmt.Printf("Creating common.gitignore file: %s\n", commonIgnorePath)
-			if err := createDefaultIgnore(commonIgnorePath); err != nil {
-				fmt.Fprintf(os.Stderr, "Error creating common.gitignore file: %v\n", err)
-				os.Exit(1)
-			}
+		// 共通無視ファイルの存在確認と作成
+		commonIgnorePath, err := EnsureCommonIgnore(configDir)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error managing common.gitignore: %v\n", err)
+			os.Exit(1)
 		}
 
 		// テンプレートファイルのパスを構築

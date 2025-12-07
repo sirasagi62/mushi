@@ -19,7 +19,7 @@ var (
 	// CommonIgnorePath は共通無視ファイルのパスです
 	CommonIgnorePath string
 	// Version は mushi のバージョンです
-	Version string = "v0.2.2"
+	Version string = "v0.2.3"
 )
 
 // Config は mushi の設定を保持する構造体です
