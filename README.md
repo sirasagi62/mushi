@@ -167,6 +167,14 @@ This allows you to include patterns from the github/gitignore repository in your
    - Combines it with the selected template
    - Writes the result to `./.gitignore`
 
+## Testing
+
+You can run the unit tests with the following command:
+
+```bash
+$ go test -v ./...
+```
+
 ## License
 
 The program itself, written in Golang, is distributed under the MIT License. See the [LICENSE](LICENSE) file for details.
