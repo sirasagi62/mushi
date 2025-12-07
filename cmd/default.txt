@@ -5,16 +5,10 @@
 ## Windows
 #Import:Global/Windows
 ### Security identifier for downloaded files
-:*Zone.Identifier
+*.Identifier
 
 ## Linux
 #Import:Global/Linux
-
-## Build Output and Dependencies
-### Compiled output directories
-bin/
-obj/
-dist/
 
 ## Virtual Machines
 ### Virtual disk images
